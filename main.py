@@ -61,9 +61,6 @@ class Record:
         if self.find_phone(old_phone) and Phone(new_phone):
             self.remove_phone(old_phone)
             self.add_phone(new_phone)
-        else:
-            raise PhoneNumberError(
-                "Invalid phone number. It should be 10 digits.")
 
     def find_phone(self, phone_number) -> str | None:
         # Пошук телефону
