@@ -31,14 +31,15 @@ class Name(Field):
 class Phone(Field):
     # Клас для зберігання номера телефону. Має валідацію формату (10 цифр).
     def __init__(self, value: str) -> None:
-        if not self.validate(value):
-            raise PhoneNumberError("Invalid phone number. It should be 10 digits.")
+        if not self.__validate(value):
+            raise PhoneNumberError(
+                "Invalid phone number. It should be 10 digits.")
         super().__init__(value)
 
     @staticmethod
-    def validate(value) -> bool:
+    def __validate(value) -> bool:
         # Перевірка формату телефону (10 цифр)
-        return bool(re.match(r'\d{10}', value))
+        return bool(re.match(r'^\d{10}$', value))
 
 
 class Record:
@@ -51,21 +52,25 @@ class Record:
         # Додавання телефону
         self.phones.append(Phone(phone_number))
 
-    def delete_phone(self, phone_number: str) -> None:
+    def remove_phone(self, phone_number: str) -> None:
         # Видалення телефону за номером
         self.phones = [p for p in self.phones if p.value != phone_number]
 
     def edit_phone(self, old_phone: str, new_phone: str) -> None:
         # Редагування телефону
-        self.delete_phone(old_phone)
-        self.add_phone(new_phone)
+        if self.find_phone(old_phone) and Phone(new_phone):
+            self.remove_phone(old_phone)
+            self.add_phone(new_phone)
+        else:
+            raise PhoneNumberError(
+                "Invalid phone number. It should be 10 digits.")
 
     def find_phone(self, phone_number) -> str | None:
         # Пошук телефону
         for phone in self.phones:
             if phone.value == phone_number:
                 return phone
-        return None
+        raise ValueError(f"Error: phone number '{phone_number}' not found.")
 
     def __str__(self):
         phone_numbers = "; ".join([str(phone) for phone in self.phones])
@@ -105,6 +110,7 @@ if __name__ == "__main__":
     # Створення та додавання нового запису для Jane
     jane_record = Record("Jane")
     jane_record.add_phone("9876543210")
+    jane_record.add_phone("0504567890")
     book.add_record(jane_record)
 
     # Виведення всіх записів у книзі
