@@ -33,7 +33,7 @@ class Phone(Field):
     def __init__(self, value: str) -> None:
         if not self.__validate(value):
             raise PhoneNumberError(
-                "Invalid phone number. It should be 10 digits.")
+                f"Invalid phone number '{value}'. It should be 10 digits.")
         super().__init__(value)
 
     @staticmethod
@@ -61,6 +61,8 @@ class Record:
         if self.find_phone(old_phone):
             self.add_phone(new_phone)
             self.remove_phone(old_phone)
+        else:
+            raise ValueError(f"Error: phone number '{old_phone}' not found.")
 
     def find_phone(self, phone_number) -> str | None:
         # Пошук телефону
@@ -116,7 +118,7 @@ if __name__ == "__main__":
 
     # Знаходження та редагування телефону для John
     john = book.find("John")
-    john.edit_phone("1234567890", "11122233333")
+    john.edit_phone("1234567899", "1112223334")
 
     print(john)  # Виведення: Contact name: John, phones: 1112223333; 5555555555
 
